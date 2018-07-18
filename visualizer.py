@@ -12,11 +12,12 @@ dirty = True
 clock = pygame.time.Clock()
 
 shape = [(0, 0), (1, 0), (0.5, math.sqrt(3) / 2)]
-points = [(3, 3)]
+points = [(3, 3),(1,1),(2,2)]
 
 axis_color = pygame.Color('black')
 shape_color = pygame.Color('blue')
 line_color = pygame.Color('green')
+point_color = pygame.Color('red')
 
 
 def init():
@@ -59,6 +60,7 @@ def draw():
         for i in points:
             for j in shape:
                 line(screen, line_color, real_to_screen(j), real_to_screen(i))
+            pygame.draw.circle(screen, point_color, real_to_screen(i), 3)
         pygame.display.flip()
         clock.tick(60)
         dirty = False
