@@ -1,32 +1,36 @@
-from fractions import gcd
+from math import gcd
+import threading
 import json
-try:
-    found=json.load(open('steinhaus.json'))
-except FileNotFoundError:
-    found=[]
-bot=int(input('bottom border='))
-top = int(input('top border='))
-try:
-    for a in range(bot,top):
-        print(((a-bot)/(top-bot))*100,'% done')
+
+
+class PointGenerator(threading.Thread):
+    def load(self):
         try:
-            found=json.load(open('steinhaus.json'))
+            self.found = json.load(open('steinhaus.json'))
         except FileNotFoundError:
-            found=[]
-        for b in range(bot,top):
-            for c in range(bot,top):
-                for l in range(bot,top):
-                    asq=a*a
-                    bsq=b*b
-                    csq=c*c
-                    lsq=l*l
-                    if asq*asq+bsq*bsq+csq*csq+lsq*lsq==asq*bsq+asq*csq+asq*lsq+bsq*csq+bsq*lsq+csq*lsq:
-                        if sorted([a,b,c,l]) not in found:
-                            found+=[sorted([a,b,c,l])]
-                            print(sorted([a,b,c,l]))
-                            json.dump(found, open('steinhaus.json', 'w'))
-except KeyboardInterrupt:
-    print('Found:',found)
-finally:
-    print('Writing json...')
-    json.dump(found, open('steinhaus.json', 'w'))
+            self.found = []
+
+    def __init__(self):
+        super().__init__()
+        self.bot = 1
+        self.top = 100
+        self.found = []
+        self.callback = lambda x: print('Callback: ', x)
+
+    def run(self):
+        # self.load()
+        for i in self.found:
+            self.callback(tuple(i))
+        for a in range(self.bot, self.top):
+            for b in range(self.bot, self.top):
+                for c in range(self.bot, self.top):
+                    for l in range(self.bot, self.top):
+                        asq = a * a
+                        bsq = b * b
+                        csq = c * c
+                        lsq = l * l
+                        if asq * asq + bsq * bsq + csq * csq + lsq * lsq == asq * bsq + asq * csq + asq * lsq + bsq * csq + bsq * lsq + csq * lsq:
+                            if sorted([a, b, c, l]) not in self.found and gcd(a, gcd(b, gcd(c, l))) != 1:
+                                self.found += [sorted([a, b, c, l])]
+                                self.callback(tuple(sorted((a, b, c, l))))
+                                json.dump(self.found, open('steinhaus.json', 'w'))
