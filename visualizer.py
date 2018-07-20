@@ -18,16 +18,18 @@ class Visualiser:
 
         self.shape = [(0, 0), (1, 0), (0.5, math.sqrt(3) / 2)]
         self.targets = {}
+        self.colliders = []
 
         self.axis_color = pygame.Color('black')
         self.shape_color = pygame.Color('blue')
         self.line_color = pygame.Color('green')
-        self.point_color = pygame.Color('red')
+        self.point_color = [(255,0,0),(0,255,0),(0,0,255),(255,255,0),(0,255,255),(0,0,0)]
+        self.point_color = [pygame.Color(*i) for i in self.point_color]
         self.generator = None
 
     def run(self):
         self.screen = pygame.display.set_mode((self.width, self.height))
-        self.generator = generator.PointGenerator()
+        self.generator = generator.PointGenerator(self)
         self.generator.callback = self.add_tuple
         self.generator.start()
         while 1:
@@ -50,6 +52,7 @@ class Visualiser:
         x /= self.zoom[0]
         y /= self.zoom[1]
         y = -y
+
         return x, y
 
     def draw(self):
@@ -64,13 +67,13 @@ class Visualiser:
                 line(self.screen, self.shape_color, self.real_to_screen(self.shape[i]),
                      self.real_to_screen(self.shape[i + 1]))
             line(self.screen, self.shape_color, self.real_to_screen(self.shape[0]), self.real_to_screen(self.shape[-1]))
-            for i in self.targets:
-                for j in self.shape:
-                    for k in self.targets[i]:
-                        line(self.screen, self.line_color, self.real_to_screen(j), self.real_to_screen(k))
-            for j in self.targets:
-                for i in self.targets[j]:
-                    pygame.draw.circle(self.screen, self.point_color, self.real_to_screen(i), 3)
+            self.colliders = []
+            for i in self.generator.data['found']:
+                for j in self.generator.data['found'][i]:
+                    pygame.draw.circle(self.screen, self.point_color[j[2]], self.real_to_screen((j[0],j[1])),3)
+                    cpoint = self.real_to_screen((j[0],j[1]))
+                    target = (i,j)
+                    self.colliders.append((cpoint, target))
             pygame.display.flip()
             self.clock.tick(60)
             self.dirty = False
@@ -84,7 +87,17 @@ class Visualiser:
                 elif event.button == 5:  # down self.scroll wheel
                     self.zoom = [i / 1.25 for i in self.zoom]
                 elif event.button == 1:  # left click
-                    pass  # TODO: select node.
+                    for i in self.colliders:
+                        crect = pygame.Rect(0,0,5,5)
+                        crect.center = i[0]
+                        if crect.collidepoint(*event.pos):
+                            target = self.generator.data['found'][i[1][0]]
+                            target[target.index(i[1][1])][2]+=1
+                            if target[target.index(i[1][1])][2]>=len(self.point_color):
+                                target[target.index(i[1][1])][2] = 0
+                            self.generator.save()
+
+
             elif event.type == pygame.MOUSEMOTION:
                 if event.buttons[2]:
                     self.dirty = True
@@ -93,8 +106,10 @@ class Visualiser:
 
     def add_tuple(self, new_val):
         print(new_val)
+        val = new_val.split(' ')
+        val = [int(i) for i in val]
         values = []
-        for i in itertools.permutations(new_val):
+        for i in itertools.permutations(val):
             a, b, c, l = i
             a /= l
             b /= l
@@ -102,8 +117,8 @@ class Visualiser:
             l = 1
             x = -((b * b) - (a * a) - (l * l)) / (2 * l)
             y = ((a * a) + (l * l) + (b * b) - (2 * c * c)) / (2 * math.sqrt(3) * l)
-            values.append([x, y])
-        self.targets.update({new_val: values})
+            values.append([x, y, 0])
+        self.generator.data['found'].update({new_val: values})
 
         self.dirty = True
 

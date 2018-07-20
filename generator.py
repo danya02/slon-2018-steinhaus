@@ -6,21 +6,22 @@ import json
 class PointGenerator(threading.Thread):
     def load(self):
         try:
-            self.found = json.load(open('steinhaus.json'))
+            self.data = json.load(open('steinhaus.json'))
         except FileNotFoundError:
-            self.found = []
+            self.data = {'found': {}}
 
-    def __init__(self):
+    def __init__(self, vis):
         super().__init__()
         self.bot = 1
         self.top = 100
-        self.found = []
-        self.callback = lambda x: print('Callback: ', x)
+        self.data = {'found': {}}
+        self.vis = vis
+
+    def save(self):
+        json.dump(self.data, open('steinhaus.json', 'w'))
 
     def run(self):
-        # self.load()
-        for i in self.found:
-            self.callback(tuple(i))
+        self.load()
         for a in range(self.bot, self.top):
             for b in range(self.bot, self.top):
                 for c in range(self.bot, self.top):
@@ -30,7 +31,7 @@ class PointGenerator(threading.Thread):
                         csq = c * c
                         lsq = l * l
                         if asq * asq + bsq * bsq + csq * csq + lsq * lsq == asq * bsq + asq * csq + asq * lsq + bsq * csq + bsq * lsq + csq * lsq:
-                            if sorted([a, b, c, l]) not in self.found and gcd(a, gcd(b, gcd(c, l))) != 1:
-                                self.found += [sorted([a, b, c, l])]
-                                self.callback(tuple(sorted((a, b, c, l))))
-                                json.dump(self.found, open('steinhaus.json', 'w'))
+                            newval = ' '.join([str(i) for i in sorted([a, b, c, l])])
+                            if newval not in self.data['found'] and gcd(a, gcd(b, gcd(c, l))) != 1:
+                                self.vis.add_tuple(newval)
+                                self.save()
