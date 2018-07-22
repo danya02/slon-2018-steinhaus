@@ -12,8 +12,8 @@ class PointGenerator(threading.Thread):
 
     def __init__(self, vis):
         super().__init__()
-        self.bot = 1
-        self.top = 100
+        self.bot = 100
+        self.top = 1000
         self.data = {'found': {}}
         self.vis = vis
 
@@ -22,9 +22,15 @@ class PointGenerator(threading.Thread):
 
     def run(self):
         self.load()
+        delta = self.top - self.bot
         for a in range(self.bot, self.top):
+            apercent = ((a-self.bot) / delta) * 100
+            #print(apercent)
             for b in range(self.bot, self.top):
+                bpercent = ((b-self.bot) / delta) * 100
                 for c in range(self.bot, self.top):
+                    cpercent = ((c-self.bot) / delta) * 100
+                    print(f'a={apercent}% b={bpercent}% c={cpercent}%   ')
                     for l in range(self.bot, self.top):
                         asq = a * a
                         bsq = b * b
