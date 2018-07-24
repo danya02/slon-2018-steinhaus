@@ -23,7 +23,10 @@ class Visualiser:
 
         self.axis_color = pygame.Color('black')
         self.shape_color = pygame.Color('blue')
+        self.pos_slope_color = pygame.Color('red')
+        self.neg_slope_color = pygame.Color('blue')
         self.line_color = pygame.Color('green')
+        self.circle_color = self.line_color
         self.point_color = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (0, 0, 0)]
         self.point_color = [pygame.Color(*i) for i in self.point_color]
         self.file = 'steinhaus-input'
@@ -42,8 +45,6 @@ class Visualiser:
                     else:
                         print(f'Adding tuple ({i})...')
                         self.add_tuple(i)
-                print('Loaded all tuples, so deleting file...')
-                os.remove(self.file)
 
         except FileNotFoundError:
             print(f'But file {self.file} wasn\'t found.')
@@ -52,7 +53,7 @@ class Visualiser:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.generator = generator.PointGenerator(self)
         self.generator.callback = self.add_tuple
-        self.generator.start()
+#        self.generator.start()
         self.load_from_file()
         while 1:
             self.draw()
@@ -77,6 +78,7 @@ class Visualiser:
 
         return x, y
 
+
     def draw(self):
         if self.dirty:
             line = pygame.draw.line
@@ -89,6 +91,24 @@ class Visualiser:
                 line(self.screen, self.shape_color, self.real_to_screen(self.shape[i]),
                      self.real_to_screen(self.shape[i + 1]))
             line(self.screen, self.shape_color, self.real_to_screen(self.shape[0]), self.real_to_screen(self.shape[-1]))
+            ci = (100/self.zoom[0])*1000 # current infinity
+            start_line = (-ci,0)
+            end_line = (ci,0)
+            start_pos = (-ci, -ci*math.sqrt(3))
+            end_pos = (ci, ci*math.sqrt(3))
+            start_neg = (-ci, math.sqrt(3)*ci+math.sqrt(3))
+            end_neg = (ci, -math.sqrt(3)*ci+math.sqrt(3))
+            start_pos = self.real_to_screen(start_pos)
+            end_pos = self.real_to_screen(end_pos)
+            start_neg = self.real_to_screen(start_neg)
+            end_neg = self.real_to_screen(end_neg)
+            line(self.screen,self.axis_color,start_line,end_line)
+            line(self.screen,self.pos_slope_color,start_pos,end_pos)
+            line(self.screen,self.neg_slope_color,start_neg,end_neg)
+            try:
+                pygame.draw.circle(self.screen, self.circle_color, self.real_to_screen((0.5, math.sqrt(3)/6)),int((math.sqrt(3)/3)*self.zoom[0]), 1)
+            except ValueError:
+                pass
             self.colliders = []
             for i in self.generator.data['found']:
                 for j in self.generator.data['found'][i]:

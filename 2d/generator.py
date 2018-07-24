@@ -12,8 +12,8 @@ class PointGenerator(threading.Thread):
 
     def __init__(self, vis):
         super().__init__()
-        self.bot = 100
-        self.top = 1000
+        self.bot = 1
+        self.top = 100
         self.data = {'found': {}}
         self.vis = vis
 
