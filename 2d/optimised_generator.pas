@@ -35,6 +35,7 @@ function evk(a,b:integer):integer;
 begin
 assign(f, 'steinhaus-input');
 rewrite(f);
+write('Max number of iterations:');
 readln(n);
 a:=0;
 while a <= n do
@@ -91,17 +92,17 @@ begin
           for i:=1 to t do
               if(s[i,1] = s[t+1,1])and(s[i,2] = s[t+1,2])and(s[i,3] = s[t+1,3])and(s[i,4] = s[t+1,4])then
                 r:=1;
-          //writeln(a,' ',b,' ',c,' ',l);
+          writeln(a,' ',b,' ',c,' ',l);
           if(evk(evk(evk(a,b),c),l) = 1)and(r = 0)then
           if((a*a*a*a+b*b*b*b+c*c*c*c+l*l*l*l) = ((a*a*l*l+a*a*b*b+b*b*l*l+a*a*c*c+b*b*c*c+c*c*l*l)))then
              begin
-             writeln(f,'  ',a,' ',b,' ',c,' ',l);
-             writeln('  ',a,' ',b,' ',c,' ',l);
+             writeln(f,a,' ',b,' ',c,' ',l);
+             writeln('!!!  ',a,' ',b,' ',c,' ',l);
              t:=t+1;
              end;
         end;
       end;
     end;
 end;
-//close(f);
+close(f);
 end.
