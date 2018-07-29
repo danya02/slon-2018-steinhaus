@@ -22,21 +22,25 @@ def worker(num):
                                 print(a,b,c,d,l,file=o)
                                 print(num,': FOUND!!!!!',a,b,c,d,l)
 
-proclist = [multiprocessing.Process(target=worker,args=tuple([i+1])) for i in range(procs)]
-for i in proclist:
-    i.start()
-try:
-    for i,j in enumerate(proclist):
-        print(f'Waiting for process {i}...')
-        j.join()
-finally:
-    print('Combining data!')
-    data=[]
-    for i in range(procs):
+if __name__=='__main__':
+    proclist = [multiprocessing.Process(target=worker,args=tuple([i+1])) for i in range(procs)]
+    for i in proclist:
+        i.start()
+    try:
+        for i,j in enumerate(proclist):
+            print(f'Waiting for process {i}...')
+            j.join()
+    finally:
+        print('Combining data!')
+        data=[]
+        for i in range(procs):
+            try:
+                data.extend(open(f'steinhaus-3d-tetrahedron.part{i+1}'))
+            except:
+                pass
         try:
-            data.extend(open(f'steinhaus-3d-tetrahedron.part{i+1}'))
+            data.extend(open('steinhaus-3d-tetrahedron'))
         except:
             pass
-    data.extend(open('steinhaus-3d-tetrahedron'))
-    data=set(data)
-    open('steinhaus-3d-tetrahedron','w').write(''.join(data))
+        data=set(data)
+        open('steinhaus-3d-tetrahedron','w').write(''.join(data))
