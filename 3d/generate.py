@@ -6,7 +6,7 @@ def test(a,b,c,d,l):
     lsq=l**2
     return 3*((l**4)+(b**4)+(a**4)+(c**4)+(d**4)) == 2*(bsq*lsq+asq*lsq+asq*bsq+bsq*csq+csq*lsq+asq*csq+asq*dsq+bsq*dsq+csq*dsq+lsq*dsq)
 
-limit=100
+limit=150
 found = []
 try:
     with open('steinhaus-3d-tetrahedron') as o:
