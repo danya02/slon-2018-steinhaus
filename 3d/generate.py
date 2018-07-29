@@ -7,18 +7,18 @@ def test(a,b,c,d,l):
     lsq=l**2
     return 3*((l**4)+(b**4)+(a**4)+(c**4)+(d**4)) == 2*(bsq*lsq+asq*lsq+asq*bsq+bsq*csq+csq*lsq+asq*csq+asq*dsq+bsq*dsq+csq*dsq+lsq*dsq)
 
-limit=60
+limit=10
 procs = 16
 def worker(num):
     print('I am worker',num)
     for a in range(num,limit,procs):
         for b in range(1,limit):
-            print(f'{num}: a={a}, b={b}')
+            print('{num}: a={a}, b={b}'.format(**locals()))
             for c in range(1,limit):
                 for d in range(1,limit):
                     for l in range(1,limit):
                         if test(a,b,c,d,l):
-                            with open(f'steinhaus-3d-tetrahedron.part{num}','a') as o:
+                            with open('steinhaus-3d-tetrahedron.part{num}'.format(**locals()),'a') as o:
                                 print(a,b,c,d,l,file=o)
                                 print(num,': FOUND!!!!!',a,b,c,d,l)
 
@@ -28,14 +28,14 @@ if __name__=='__main__':
         i.start()
     try:
         for i,j in enumerate(proclist):
-            print(f'Waiting for process {i}...')
+            print('Waiting for process {i}...'.format(**locals()))
             j.join()
     finally:
         print('Combining data!')
         data=[]
         for i in range(procs):
             try:
-                data.extend(open(f'steinhaus-3d-tetrahedron.part{i+1}'))
+                data.extend(open('steinhaus-3d-tetrahedron.part{}'.format(i+1)))
             except:
                 pass
         try:
