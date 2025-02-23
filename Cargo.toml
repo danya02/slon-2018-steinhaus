@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "2d/generator",
+]
+resolver = "3"

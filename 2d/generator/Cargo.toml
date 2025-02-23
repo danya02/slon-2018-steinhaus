@@ -1,0 +1,9 @@
+[package]
+name = "generator"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+atomic-counter = "1.0.1"
+num = "0.4.3"
+rayon = "1.10.0"
