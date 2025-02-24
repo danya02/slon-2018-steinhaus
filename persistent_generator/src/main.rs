@@ -75,6 +75,7 @@ fn main() {
         }
 
         println!("{}", file);
+        let start = std::time::Instant::now();
         let text = std::fs::read_to_string(&file).unwrap();
         let mut job: types::Job = serde_json::from_str(&text).unwrap();
         if job.result.is_some() {
@@ -90,5 +91,10 @@ fn main() {
         let job_string = serde_json::to_string(&job).unwrap();
         let mut file = std::fs::File::create(&file).unwrap();
         file.write_all(job_string.as_bytes()).unwrap();
+
+        let end = std::time::Instant::now();
+        let duration = end - start;
+        println!("Took {:.4} seconds", duration.as_secs_f64());
+        println!("Found {} results", job.result.unwrap().len());
     }
 }
