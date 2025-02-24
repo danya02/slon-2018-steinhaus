@@ -12,7 +12,7 @@ pub enum Task {
     ThreeDimensional(ThreeDimensionalTask),
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Copy)]
 pub struct TwoDimensionalTask {
     pub a_range: (u64, u64),
     pub b_range: (u64, u64),
@@ -20,7 +20,7 @@ pub struct TwoDimensionalTask {
     pub l_range: (u64, u64),
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Copy)]
 pub struct ThreeDimensionalTask {
     pub a_range: (u64, u64),
     pub b_range: (u64, u64),

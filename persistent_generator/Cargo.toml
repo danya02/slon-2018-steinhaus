@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+chrono = "0.4.39"
+chrono-tz = "0.10.1"
 itertools = "0.14.0"
 rayon = "1.10.0"
 serde = { version = "1.0.218", features = ["derive"] }

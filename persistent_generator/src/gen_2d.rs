@@ -1,4 +1,4 @@
-use rayon::iter::{IntoParallelIterator, ParallelBridge, ParallelIterator};
+use rayon::iter::{ParallelBridge, ParallelIterator};
 
 use crate::types::TwoDimensionalTask;
 
@@ -19,7 +19,7 @@ fn test(a: u64, b: u64, c: u64, l: u64) -> bool {
         == asq * lsq + asq * bsq + bsq * lsq + asq * csq + bsq * csq + csq * lsq
 }
 
-fn run(task: TwoDimensionalTask) -> Vec<String> {
+pub fn run(task: TwoDimensionalTask) -> Vec<String> {
     let a = task.a_range.0..=task.a_range.1;
     let b = task.b_range.0..=task.b_range.1;
     let c = task.c_range.0..=task.c_range.1;

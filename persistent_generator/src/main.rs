@@ -1,5 +1,7 @@
 use std::{collections::HashSet, io::Write};
 
+use chrono::Timelike;
+
 mod gen_2d;
 mod gen_3d;
 mod types;
@@ -7,9 +9,17 @@ mod types;
 fn main() {
     let files = std::fs::read_dir("hundreds-2d")
         .unwrap()
-        .map(|a| a.unwrap().path().display().to_string())
+        .map(|a| {
+            a.unwrap()
+                .path()
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .to_string()
+        })
         .collect::<HashSet<_>>();
-    let max_hundred = 50;
+    println!("file: {:?}", files.iter().next());
+    let max_hundred = 10;
     for a in 0..max_hundred {
         for b in 0..max_hundred {
             for c in 0..max_hundred {
@@ -37,10 +47,44 @@ fn main() {
                     };
 
                     let job_string = serde_json::to_string(&job).unwrap();
-                    let mut file = std::fs::File::create(&name).unwrap();
+                    let mut file = std::fs::File::create(format!("hundreds-2d/{}", name)).unwrap();
                     file.write_all(job_string.as_bytes()).unwrap();
                 }
             }
         }
+    }
+
+    let files = std::fs::read_dir("hundreds-2d")
+        .unwrap()
+        .map(|a| a.unwrap().path().display().to_string())
+        .collect::<HashSet<_>>();
+
+    for file in files {
+        loop {
+            let now = chrono::Utc::now().with_timezone(&chrono_tz::Europe::Moscow);
+            let hour = now.time().hour();
+            println!("hour: {}", hour);
+            let working_hours = 6..=21;
+            if working_hours.contains(&hour) {
+                println!("Current hour is inside working hours, so not running");
+                println!("Try again in 15 minutes");
+                std::thread::sleep(std::time::Duration::from_secs(15 * 60));
+                continue;
+            }
+            break;
+        }
+
+        println!("{}", file);
+        let text = std::fs::read_to_string(&file).unwrap();
+        let mut job: types::Job = serde_json::from_str(&text).unwrap();
+        let result = match job.task {
+            types::Task::TwoDimensional(task) => gen_2d::run(task),
+            types::Task::ThreeDimensional(task) => gen_3d::run(task),
+        };
+        job.result = Some(result);
+
+        let job_string = serde_json::to_string(&job).unwrap();
+        let mut file = std::fs::File::create(&file).unwrap();
+        file.write_all(job_string.as_bytes()).unwrap();
     }
 }
