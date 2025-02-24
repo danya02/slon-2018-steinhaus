@@ -3,6 +3,11 @@ use rayon::iter::{ParallelBridge, ParallelIterator};
 use crate::types::TwoDimensionalTask;
 
 fn test(a: u64, b: u64, c: u64, l: u64) -> bool {
+    // Ensure the points are in ascending order
+    if a > b || b > c || c > l {
+        return false;
+    }
+
     let asq = a * a;
     let bsq = b * b;
     let csq = c * c;
@@ -16,7 +21,7 @@ fn test(a: u64, b: u64, c: u64, l: u64) -> bool {
     //     + c.pow(2) * l.pow(2))
 
     asq * asq + bsq * bsq + csq * csq + lsq * lsq
-        == asq * lsq + asq * bsq + bsq * lsq + asq * csq + bsq * csq + csq * lsq
+        == asq * bsq + asq * csq + asq * lsq + bsq * csq + bsq * lsq + csq * lsq
 }
 
 pub fn run(task: TwoDimensionalTask) -> Vec<String> {
