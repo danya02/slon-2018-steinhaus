@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "2d/generator",
+    "2d/generator", "persistent_generator",
 ]
 resolver = "3"
