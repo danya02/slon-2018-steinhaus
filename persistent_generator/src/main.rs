@@ -77,6 +77,10 @@ fn main() {
         println!("{}", file);
         let text = std::fs::read_to_string(&file).unwrap();
         let mut job: types::Job = serde_json::from_str(&text).unwrap();
+        if job.result.is_some() {
+            println!("Job already has result, skipping");
+            continue;
+        }
         let result = match job.task {
             types::Task::TwoDimensional(task) => gen_2d::run(task),
             types::Task::ThreeDimensional(task) => gen_3d::run(task),
